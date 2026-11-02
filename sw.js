@@ -1,9 +1,10 @@
 /* Service Worker for 朝暮 v1.0 */
-const CACHE_NAME = 'zhaomu-v3';
+const CACHE_NAME = 'zhaomu-v4';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
+  './icon-180.png',
   './icon-192.png',
   './icon-512.png',
   './icon.svg'

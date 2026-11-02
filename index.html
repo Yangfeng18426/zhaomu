@@ -13,7 +13,7 @@
 <title>朝暮</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -52,6 +52,7 @@ button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 button:focus-visible,textarea:focus-visible{outline:2px solid rgba(148,89,67,.48);outline-offset:3px}
 body.modal-open{overflow:hidden}
+body.intro-open{overflow:hidden}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 .site-header{
@@ -576,6 +577,45 @@ body.modal-open{overflow:hidden}
 }
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+.launch-cover{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(255,255,255,.92),transparent 19rem),
+    #f3efe8;
+  opacity:1;
+  transition:opacity .42s ease;
+}
+.launch-cover.show{display:flex}
+.launch-cover.leaving{opacity:0}
+.launch-inner{text-align:center;transform:translateY(8px);animation:launch-rise .7s cubic-bezier(.2,.75,.3,1) both}
+@keyframes launch-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(8px)}}
+.launch-title{
+  padding-left:.32em;
+  font-family:var(--font-song);
+  font-size:42px;
+  font-weight:500;
+  line-height:1;
+  letter-spacing:.32em;
+}
+.launch-rule{
+  display:block;
+  width:30px;
+  height:1px;
+  margin:22px auto 17px;
+  background:var(--accent);
+}
+.launch-caption{
+  color:var(--ink-faint);
+  font-family:var(--font-kai);
+  font-size:12px;
+  letter-spacing:.18em;
+}
+
 @media (min-width:640px){
   .site-header{padding-left:32px;padding-right:32px}
   .app-main{padding-left:32px;padding-right:32px}
@@ -595,6 +635,14 @@ body.modal-open{overflow:hidden}
 </style>
 </head>
 <body>
+<div class="launch-cover" id="launchCover" aria-hidden="true">
+  <div class="launch-inner">
+    <div class="launch-title">朝暮</div>
+    <span class="launch-rule" aria-hidden="true"></span>
+    <div class="launch-caption">写给自己的日常</div>
+  </div>
+</div>
+
 <header class="site-header">
   <div class="brand">
     <h1>朝暮</h1>
@@ -1414,6 +1462,29 @@ async function installApp() {
   showToast(isIos ? '在 Safari 分享菜单中选择“添加到主屏幕”' : '在浏览器菜单中选择“添加到主屏幕”');
 }
 
+function showStandaloneIntro() {
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const preview = new URLSearchParams(location.search).has('launch-preview');
+  let seen = false;
+  try { seen = localStorage.getItem('zhaomu_standalone_intro_seen_v1') === '1'; } catch {}
+  if ((!standalone && !preview) || seen) return;
+
+  const cover = document.getElementById('launchCover');
+  cover.classList.add('show');
+  document.body.classList.add('intro-open');
+  if (!preview) {
+    try { localStorage.setItem('zhaomu_standalone_intro_seen_v1', '1'); } catch {}
+  }
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hold = preview ? 1600 : (reducedMotion ? 80 : 1050);
+  setTimeout(() => cover.classList.add('leaving'), hold);
+  setTimeout(() => {
+    cover.classList.remove('show', 'leaving');
+    document.body.classList.remove('intro-open');
+  }, hold + 450);
+}
+
 document.getElementById('dayDate').textContent = '';
 document.getElementById('createBtn').addEventListener('click', () => openEditor(null));
 document.getElementById('menuBtn').addEventListener('click', () => openMask(document.getElementById('menuMask')));
@@ -1568,6 +1639,7 @@ async function start() {
   renderFeed();
 }
 
+showStandaloneIntro();
 start();
 </script>
 </body>
