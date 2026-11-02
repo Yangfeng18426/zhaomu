@@ -1,0 +1,16 @@
+{
+  "name": "拾光 · 私人灵感手账",
+  "short_name": "拾光",
+  "description": "捡拾光阴里的光：妙想、美好与追踪，陪你慢慢记录与成长。",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#f4ede1",
+  "background_color": "#f4ede1",
+  "lang": "zh-CN",
+  "categories": ["productivity", "lifestyle"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
