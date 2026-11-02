@@ -1462,28 +1462,43 @@ async function installApp() {
   showToast(isIos ? '在 Safari 分享菜单中选择“添加到主屏幕”' : '在浏览器菜单中选择“添加到主屏幕”');
 }
 
+let introPlaying = false;
+let introTimers = [];
+let introHiddenAt = 0;
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
 function showStandaloneIntro() {
-  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const preview = new URLSearchParams(location.search).has('launch-preview');
-  let seen = false;
-  try { seen = localStorage.getItem('zhaomu_standalone_intro_seen_v1') === '1'; } catch {}
-  if ((!standalone && !preview) || seen) return;
+  if ((!isStandalone() && !preview) || introPlaying) return;
 
   const cover = document.getElementById('launchCover');
+  introTimers.forEach(clearTimeout);
+  introTimers = [];
+  introPlaying = true;
   cover.classList.add('show');
   document.body.classList.add('intro-open');
-  if (!preview) {
-    try { localStorage.setItem('zhaomu_standalone_intro_seen_v1', '1'); } catch {}
-  }
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hold = preview ? 1600 : (reducedMotion ? 80 : 1050);
-  setTimeout(() => cover.classList.add('leaving'), hold);
-  setTimeout(() => {
+  introTimers.push(setTimeout(() => cover.classList.add('leaving'), hold));
+  introTimers.push(setTimeout(() => {
     cover.classList.remove('show', 'leaving');
     document.body.classList.remove('intro-open');
-  }, hold + 450);
+    introPlaying = false;
+  }, hold + 450));
 }
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    introHiddenAt = Date.now();
+  } else if (introHiddenAt && Date.now() - introHiddenAt > 30000) {
+    introHiddenAt = 0;
+    showStandaloneIntro();
+  }
+});
 
 document.getElementById('dayDate').textContent = '';
 document.getElementById('createBtn').addEventListener('click', () => openEditor(null));

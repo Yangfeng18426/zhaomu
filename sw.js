@@ -1,5 +1,5 @@
 /* Service Worker for 朝暮 v1.0 */
-const CACHE_NAME = 'zhaomu-v4';
+const CACHE_NAME = 'zhaomu-v5';
 const urlsToCache = [
   './',
   './index.html',
