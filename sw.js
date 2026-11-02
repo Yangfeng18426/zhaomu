@@ -1,9 +1,11 @@
-/* Service Worker for 拾光 v1.1 */
-const CACHE_NAME = 'shiguang-v2';
+/* Service Worker for 朝暮 v1.0 */
+const CACHE_NAME = 'zhaomu-v1';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
   './icon.svg'
 ];
 
@@ -48,7 +50,7 @@ self.addEventListener('fetch', event => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
         return response;
-      }).catch(() => cached);
+      }).catch(() => cached || Response.error());
     })
   );
 });
