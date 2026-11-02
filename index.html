@@ -129,25 +129,55 @@ body.modal-open{overflow:hidden}
 
 .feed{padding-top:24px}
 .note{
-  padding:25px 4px 28px;
+  padding:5px 4px 8px;
   border-bottom:1px solid var(--line);
   animation:note-in .42s cubic-bezier(.2,.75,.3,1) both;
 }
 @keyframes note-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.note-meta{
+.note-summary{
+  list-style:none;
   display:flex;
   align-items:center;
-  justify-content:space-between;
   gap:14px;
-  margin-bottom:18px;
+  min-height:68px;
+  padding:10px 0;
+  cursor:pointer;
 }
+.note-summary::-webkit-details-marker{display:none}
+.note-summary-copy{min-width:0;flex:1}
 .note-date{
+  display:block;
   color:var(--ink-faint);
   font-size:11px;
   line-height:1.4;
   letter-spacing:.1em;
 }
-.note-actions{display:flex;align-items:center;gap:2px}
+.note-preview{
+  display:block;
+  margin-top:6px;
+  overflow:hidden;
+  color:var(--ink-soft);
+  font-family:var(--font-kai);
+  font-size:15px;
+  line-height:1.6;
+  letter-spacing:.035em;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.note-summary-tail{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.note-count{color:var(--ink-faint);font-size:10px;letter-spacing:.06em;white-space:nowrap}
+.note-chevron{
+  width:20px;
+  color:var(--ink-faint);
+  font-size:19px;
+  font-weight:300;
+  text-align:center;
+  transition:transform .2s ease,color .2s ease;
+}
+.note[open] .note-chevron{color:var(--accent);transform:rotate(45deg)}
+.note-body{padding:9px 0 20px;animation:body-in .24s ease both}
+@keyframes body-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.note-actions{display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:12px}
 .text-action{
   border:0;
   background:transparent;
@@ -157,27 +187,31 @@ body.modal-open{overflow:hidden}
   letter-spacing:.08em;
 }
 .text-action:active{color:var(--accent)}
-.note-text{
+.note-content{
   max-width:680px;
   font-size:clamp(17px,4.7vw,19px);
-  line-height:2.02;
   letter-spacing:.045em;
-  white-space:pre-wrap;
+}
+.note-paragraph{
+  margin:0 0 .82em;
+  line-height:2.02;
+  text-indent:2em;
   overflow-wrap:anywhere;
 }
+.note-paragraph:last-child{margin-bottom:0}
 .font-kai{font-family:var(--font-kai)}
 .font-song{font-family:var(--font-song)}
 .font-fangsong{font-family:var(--font-fangsong)}
 .font-hei{font-family:var(--font-hei);letter-spacing:.02em}
 
-.note-media{
-  display:grid;
-  gap:7px;
-  margin-top:20px;
+.note-figure{
+  display:block;
+  max-width:100%;
+  margin:20px auto;
 }
-.note-media[data-count="1"]{grid-template-columns:1fr;max-width:86%}
-.note-media[data-count="2"]{grid-template-columns:repeat(2,1fr);max-width:82%}
-.note-media[data-count="3"]{grid-template-columns:repeat(3,1fr)}
+.note-figure[data-size="small"]{width:46%}
+.note-figure[data-size="medium"]{width:74%}
+.note-figure[data-size="full"]{width:100%}
 .media-button{
   display:block;
   width:100%;
@@ -186,14 +220,11 @@ body.modal-open{overflow:hidden}
   border-radius:7px;
   background:var(--paper-deep);
   padding:0;
-  aspect-ratio:1;
 }
-.note-media[data-count="1"] .media-button{aspect-ratio:4/3}
 .media-button img{
   width:100%;
-  height:100%;
+  height:auto;
   display:block;
-  object-fit:cover;
   transition:transform .5s ease;
 }
 .media-button:active img{transform:scale(1.012)}
@@ -314,23 +345,29 @@ body.modal-open{overflow:hidden}
 }
 .close-button:active{background:var(--paper-deep)}
 
+.editor-blocks{
+  margin-top:2px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.editor-block + .editor-block{border-top:1px solid var(--line)}
 .editor-text{
   width:100%;
-  min-height:176px;
-  max-height:42vh;
-  max-height:42dvh;
-  padding:8px 1px 20px;
+  min-height:110px;
+  max-height:38vh;
+  max-height:38dvh;
+  padding:13px 1px 15px;
   border:0;
-  border-bottom:1px solid var(--line);
   border-radius:0;
   background:transparent;
   color:var(--ink);
-  font-family:var(--font-kai);
+  font-family:inherit;
   font-size:18px;
   line-height:1.9;
   letter-spacing:.035em;
   outline:0;
   resize:none;
+  overflow:hidden;
 }
 .editor-text:focus-visible{
   outline:1px solid rgba(148,89,67,.35);
@@ -338,6 +375,45 @@ body.modal-open{overflow:hidden}
   border-radius:4px;
 }
 .editor-text::placeholder{color:#aaa196}
+.editor-image{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding:16px 0;
+}
+.editor-image-frame{
+  width:100%;
+  overflow:hidden;
+  border-radius:7px;
+  background:var(--paper-deep);
+}
+.editor-image-frame[data-size="small"]{width:46%}
+.editor-image-frame[data-size="medium"]{width:74%}
+.editor-image-frame[data-size="full"]{width:100%}
+.editor-image-frame img{display:block;width:100%;height:auto}
+.editor-image-tools{display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px}
+.size-picker{display:flex;gap:5px}
+.size-choice{
+  padding:6px 10px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:transparent;
+  color:var(--ink-faint);
+  font-size:10px;
+}
+.size-choice[aria-pressed="true"]{
+  border-color:rgba(148,89,67,.42);
+  color:var(--accent);
+}
+.remove-photo{
+  border:0;
+  background:transparent;
+  padding:6px 2px;
+  color:var(--ink-faint);
+  font-size:10px;
+  letter-spacing:.05em;
+}
 .field{margin-top:22px}
 .field-heading{
   display:flex;
@@ -370,36 +446,10 @@ body.modal-open{overflow:hidden}
   background:var(--accent-pale);
   color:var(--accent-dark);
 }
-.editor-media{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-}
-.editor-photo{
-  position:relative;
-  overflow:hidden;
-  border-radius:7px;
-  background:var(--paper-deep);
-  aspect-ratio:1;
-}
-.editor-photo img{width:100%;height:100%;display:block;object-fit:cover}
-.remove-photo{
-  position:absolute;
-  top:5px;
-  right:5px;
-  width:25px;
-  height:25px;
-  border:0;
-  border-radius:50%;
-  background:rgba(31,28,24,.68);
-  color:#fff;
-  font-size:15px;
-  line-height:1;
-}
 .add-photo{
   width:100%;
   margin-top:9px;
-  padding:11px;
+  padding:12px 11px;
   border:1px dashed rgba(71,61,51,.22);
   border-radius:8px;
   background:transparent;
@@ -408,6 +458,14 @@ body.modal-open{overflow:hidden}
   letter-spacing:.08em;
 }
 .add-photo:disabled{color:var(--ink-faint);opacity:.52;cursor:default}
+.insert-hint{
+  margin-top:8px;
+  color:var(--ink-faint);
+  font-size:10px;
+  line-height:1.6;
+  text-align:center;
+  letter-spacing:.04em;
+}
 .sheet-actions{
   display:flex;
   align-items:center;
@@ -519,7 +577,8 @@ body.modal-open{overflow:hidden}
 @media (min-width:640px){
   .site-header{padding-left:32px;padding-right:32px}
   .app-main{padding-left:32px;padding-right:32px}
-  .note{padding-top:29px;padding-bottom:32px}
+  .note{padding-top:7px;padding-bottom:10px}
+  .note-summary{padding-top:12px;padding-bottom:12px}
   .sheet{border-radius:22px 22px 0 0;padding-left:28px;padding-right:28px}
 }
 @media (max-width:390px){
@@ -565,8 +624,14 @@ body.modal-open{overflow:hidden}
       <button class="close-button" type="button" data-close="editorMask" aria-label="关闭">×</button>
     </div>
 
-    <label class="sr-only" for="editorText">随笔正文</label>
-    <textarea class="editor-text" id="editorText" maxlength="10000" placeholder="写下今天想留住的事……"></textarea>
+    <div class="field-heading">
+      <span class="field-title">正文</span>
+      <span class="field-note" id="photoCount">0 / 3 张照片</span>
+    </div>
+    <div class="editor-blocks" id="editorBlocks" aria-label="随笔正文"></div>
+    <button class="add-photo" id="addPhotosBtn" type="button">在光标处插入照片</button>
+    <p class="insert-hint">先把光标放在想插入的位置，再从相册选择照片。</p>
+    <input class="sr-only" type="file" id="photoInput" accept="image/*" multiple>
 
     <div class="field">
       <div class="field-heading">
@@ -579,16 +644,6 @@ body.modal-open{overflow:hidden}
         <button class="font-choice font-fangsong" type="button" data-font="fangsong" aria-pressed="false">仿宋</button>
         <button class="font-choice font-hei" type="button" data-font="hei" aria-pressed="false">黑体</button>
       </div>
-    </div>
-
-    <div class="field">
-      <div class="field-heading">
-        <span class="field-title">照片</span>
-        <span class="field-note" id="photoCount">0 / 3</span>
-      </div>
-      <div class="editor-media" id="editorMedia"></div>
-      <button class="add-photo" id="addPhotosBtn" type="button">从相册选择</button>
-      <input class="sr-only" type="file" id="photoInput" accept="image/*" multiple>
     </div>
 
     <div class="sheet-actions">
@@ -639,12 +694,17 @@ const DB_VERSION = 1;
 const PHOTO_LIMIT = 3;
 const MAX_FILE_BYTES = 30 * 1024 * 1024;
 const FONTS = ['kai', 'song', 'fangsong', 'hei'];
+const PHOTO_SIZES = ['small', 'medium', 'full'];
 
 let state = { entries: [] };
 let photoMap = new Map();
 let editingId = null;
-let editorPhotos = [];
+let editorBlocks = [];
 let editorFont = 'kai';
+let activeTextBlockId = null;
+let activeTextCaret = 0;
+let insertionPoint = null;
+let openEntryId = null;
 let feedUrls = [];
 let editorUrls = [];
 let viewerUrl = '';
@@ -654,9 +714,8 @@ let toastTimer = 0;
 
 const feedEl = document.getElementById('feed');
 const editorMask = document.getElementById('editorMask');
-const editorText = document.getElementById('editorText');
 const editorTitle = document.getElementById('editorTitle');
-const editorMedia = document.getElementById('editorMedia');
+const editorBlocksEl = document.getElementById('editorBlocks');
 const photoInput = document.getElementById('photoInput');
 const addPhotosBtn = document.getElementById('addPhotosBtn');
 const photoCount = document.getElementById('photoCount');
@@ -685,13 +744,53 @@ function numberDate(value) {
   return Number.isFinite(number) && Math.abs(number) < 8640000000000000 ? number : Date.now();
 }
 
+function safePhotoSize(size) {
+  return PHOTO_SIZES.includes(size) ? size : 'medium';
+}
+
+function normalizeContentBlock(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  if (raw.type === 'text') {
+    const text = String(raw.text || '').replace(/\r\n?/g, '\n').trim();
+    return text ? { type: 'text', text } : null;
+  }
+  if (raw.type === 'image') {
+    const photoId = String(raw.photoId || '');
+    return photoId ? { type: 'image', photoId, size: safePhotoSize(raw.size) } : null;
+  }
+  return null;
+}
+
 function normalizeEntry(raw) {
-  if (!raw || typeof raw !== 'object' || !String(raw.text || '').trim()) return null;
+  if (!raw || typeof raw !== 'object') return null;
+  let content = Array.isArray(raw.content)
+    ? raw.content.map(normalizeContentBlock).filter(Boolean)
+    : [];
+  if (!content.length) {
+    const text = String(raw.text || '').replace(/\r\n?/g, '\n').trim();
+    if (text) content.push({ type: 'text', text });
+    const oldPhotoIds = Array.isArray(raw.photoIds) ? raw.photoIds : [];
+    oldPhotoIds.slice(0, PHOTO_LIMIT).forEach(photoId => {
+      content.push({ type: 'image', photoId: String(photoId), size: 'medium' });
+    });
+  }
+
+  const seenPhotos = new Set();
+  content = content.filter(block => {
+    if (block.type !== 'image') return true;
+    if (seenPhotos.has(block.photoId) || seenPhotos.size >= PHOTO_LIMIT) return false;
+    seenPhotos.add(block.photoId);
+    return true;
+  });
+  const textBlocks = content.filter(block => block.type === 'text');
+  if (!textBlocks.length) return null;
+
   return {
     id: String(raw.id || uid()),
-    text: String(raw.text),
+    text: textBlocks.map(block => block.text).join('\n'),
+    content,
     font: safeFont(raw.font),
-    photoIds: Array.isArray(raw.photoIds) ? raw.photoIds.slice(0, PHOTO_LIMIT).map(String) : [],
+    photoIds: content.filter(block => block.type === 'image').map(block => block.photoId),
     createdAt: numberDate(raw.createdAt),
     updatedAt: numberDate(raw.updatedAt || raw.createdAt)
   };
@@ -708,7 +807,7 @@ function loadEntries() {
 
 function saveEntries() {
   try {
-    localStorage.setItem(DATA_KEY, JSON.stringify({ version: 1, entries: state.entries }));
+    localStorage.setItem(DATA_KEY, JSON.stringify({ version: 2, entries: state.entries }));
   } catch {
     throw new Error('storage-full');
   }
@@ -820,6 +919,24 @@ function revokeUrls(urls) {
   urls.forEach(url => URL.revokeObjectURL(url));
 }
 
+function renderEntryContent(entry) {
+  return entry.content.map(block => {
+    if (block.type === 'text') {
+      return block.text.split(/\n+/).filter(Boolean).map(line =>
+        '<p class="note-paragraph">' + escapeHtml(line.trim()) + '</p>'
+      ).join('');
+    }
+    const photo = photoMap.get(block.photoId);
+    if (!photo) return '';
+    const url = URL.createObjectURL(photo.blob);
+    feedUrls.push(url);
+    return '<figure class="note-figure" data-size="' + safePhotoSize(block.size) + '">' +
+      '<button class="media-button" type="button" data-action="view" data-photo-id="' +
+        escapeHtml(photo.id) + '" aria-label="查看照片"><img src="' + url + '" alt="随笔照片"></button>' +
+      '</figure>';
+  }).join('');
+}
+
 function renderFeed() {
   revokeUrls(feedUrls);
   feedUrls = [];
@@ -837,24 +954,29 @@ function renderFeed() {
   }
 
   feedEl.innerHTML = entries.map(entry => {
-    const photos = entry.photoIds.map(id => photoMap.get(id)).filter(Boolean);
-    const media = photos.map(photo => {
-      const url = URL.createObjectURL(photo.blob);
-      feedUrls.push(url);
-      return '<button class="media-button" type="button" data-action="view" data-photo-id="' +
-        escapeHtml(photo.id) + '" aria-label="查看照片"><img src="' + url + '" alt=""></button>';
-    }).join('');
-
-    return '<article class="note" data-id="' + escapeHtml(entry.id) + '">' +
-      '<div class="note-meta"><time class="note-date" datetime="' + new Date(entry.createdAt).toISOString() + '">' +
-        escapeHtml(feedDate(entry.createdAt)) + '</time>' +
+    const preview = entry.text.replace(/\s+/g, ' ').trim();
+    const photoCountText = entry.photoIds.length ? entry.photoIds.length + ' 张照片' : '';
+    return '<details class="note" data-id="' + escapeHtml(entry.id) + '"' +
+        (openEntryId === entry.id ? ' open' : '') + '>' +
+      '<summary class="note-summary">' +
+        '<span class="note-summary-copy">' +
+          '<time class="note-date" datetime="' + new Date(entry.createdAt).toISOString() + '">' +
+            escapeHtml(feedDate(entry.createdAt)) + '</time>' +
+          '<span class="note-preview">' + escapeHtml(preview) + '</span>' +
+        '</span>' +
+        '<span class="note-summary-tail">' +
+          (photoCountText ? '<span class="note-count">' + photoCountText + '</span>' : '') +
+          '<span class="note-chevron" aria-hidden="true">＋</span>' +
+        '</span>' +
+      '</summary>' +
+      '<div class="note-body">' +
+        '<div class="note-content font-' + safeFont(entry.font) + '">' + renderEntryContent(entry) + '</div>' +
         '<div class="note-actions">' +
           '<button class="text-action" type="button" data-action="edit">编辑</button>' +
           '<button class="text-action" type="button" data-action="delete">删除</button>' +
-        '</div></div>' +
-      '<p class="note-text font-' + safeFont(entry.font) + '">' + escapeHtml(entry.text) + '</p>' +
-      (media ? '<div class="note-media" data-count="' + photos.length + '">' + media + '</div>' : '') +
-      '</article>';
+        '</div>' +
+      '</div>' +
+      '</details>';
   }).join('');
 }
 
@@ -880,48 +1002,101 @@ function showToast(message) {
   toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
 }
 
-function resizeEditor() {
-  editorText.style.height = 'auto';
-  editorText.style.height = Math.min(editorText.scrollHeight, window.innerHeight * .42) + 'px';
-}
-
 function setEditorFont(font) {
   editorFont = safeFont(font);
-  editorText.className = 'editor-text font-' + editorFont;
+  editorBlocksEl.className = 'editor-blocks font-' + editorFont;
   document.querySelectorAll('.font-choice').forEach(button => {
     button.setAttribute('aria-pressed', String(button.dataset.font === editorFont));
   });
 }
 
-function renderEditorPhotos() {
+function resizeTextarea(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * .38) + 'px';
+}
+
+function newTextBlock(text = '') {
+  return { id: uid(), type: 'text', text };
+}
+
+function editorPhotoCount() {
+  return editorBlocks.filter(block => block.type === 'image').length;
+}
+
+function renderEditorBlocks(focusBlockId, caretPosition) {
   revokeUrls(editorUrls);
   editorUrls = [];
-  editorMedia.innerHTML = editorPhotos.map(photo => {
-    const url = URL.createObjectURL(photo.blob);
+  setEditorFont(editorFont);
+  editorBlocksEl.innerHTML = editorBlocks.map(block => {
+    if (block.type === 'text') {
+      return '<div class="editor-block">' +
+        '<textarea class="editor-text" data-text-block="' + escapeHtml(block.id) +
+          '" maxlength="10000" placeholder="写下今天想留住的事……">' +
+          escapeHtml(block.text) + '</textarea></div>';
+    }
+    const url = URL.createObjectURL(block.photo.blob);
     editorUrls.push(url);
-    return '<div class="editor-photo"><img src="' + url + '" alt="">' +
-      '<button class="remove-photo" type="button" data-remove-photo="' + escapeHtml(photo.id) +
-      '" aria-label="移除照片">×</button></div>';
+    return '<div class="editor-block editor-image" data-image-block="' + escapeHtml(block.id) + '">' +
+      '<div class="editor-image-frame" data-size="' + safePhotoSize(block.size) + '">' +
+        '<img src="' + url + '" alt="正文中的照片"></div>' +
+      '<div class="editor-image-tools">' +
+        '<div class="size-picker" role="group" aria-label="照片大小">' +
+          ['small', 'medium', 'full'].map(size =>
+            '<button class="size-choice" type="button" data-photo-size="' + size +
+              '" aria-pressed="' + String(block.size === size) + '">' +
+              ({ small: '小', medium: '中', full: '通栏' })[size] + '</button>'
+          ).join('') +
+        '</div>' +
+        '<button class="remove-photo" type="button" data-remove-photo="' + escapeHtml(block.id) +
+          '">移除照片</button>' +
+      '</div></div>';
   }).join('');
-  photoCount.textContent = editorPhotos.length + ' / ' + PHOTO_LIMIT;
-  addPhotosBtn.disabled = editorPhotos.length >= PHOTO_LIMIT;
-  addPhotosBtn.textContent = editorPhotos.length >= PHOTO_LIMIT ? '已达 3 张' : '从相册选择';
+
+  const count = editorPhotoCount();
+  photoCount.textContent = count + ' / ' + PHOTO_LIMIT + ' 张照片';
+  addPhotosBtn.disabled = count >= PHOTO_LIMIT;
+  addPhotosBtn.textContent = count >= PHOTO_LIMIT ? '已达 3 张' : '在光标处插入照片';
+  editorBlocksEl.querySelectorAll('.editor-text').forEach(resizeTextarea);
+
+  if (focusBlockId) {
+    const textarea = editorBlocksEl.querySelector('[data-text-block="' + focusBlockId + '"]');
+    if (textarea) {
+      textarea.focus();
+      const offset = Math.min(caretPosition || 0, textarea.value.length);
+      textarea.setSelectionRange(offset, offset);
+      activeTextCaret = offset;
+    }
+  }
 }
 
 function openEditor(entry) {
   editingId = entry ? entry.id : null;
-  editorPhotos = entry
-    ? entry.photoIds.map(id => photoMap.get(id)).filter(Boolean).map(photo => ({ ...photo }))
-    : [];
+  editorBlocks = entry
+    ? entry.content.map(block => {
+      if (block.type === 'text') return newTextBlock(block.text);
+      const photo = photoMap.get(block.photoId);
+      return photo ? {
+        id: uid(),
+        type: 'image',
+        photoId: block.photoId,
+        size: safePhotoSize(block.size),
+        photo
+      } : null;
+    }).filter(Boolean)
+    : [newTextBlock()];
+  if (!editorBlocks.some(block => block.type === 'text')) editorBlocks.push(newTextBlock());
+  activeTextBlockId = editorBlocks.find(block => block.type === 'text').id;
+  activeTextCaret = 0;
+  insertionPoint = null;
   editorTitle.textContent = entry ? '重读这一页' : '写一页';
-  editorText.value = entry ? entry.text : '';
   setEditorFont(entry ? entry.font : 'kai');
-  renderEditorPhotos();
   openMask(editorMask);
+  renderEditorBlocks(activeTextBlockId, 0);
   setTimeout(() => {
-    editorText.focus();
-    editorText.setSelectionRange(editorText.value.length, editorText.value.length);
-    resizeEditor();
+    const textarea = editorBlocksEl.querySelector('[data-text-block="' + activeTextBlockId + '"]');
+    if (!textarea) return;
+    textarea.focus();
+    textarea.setSelectionRange(0, 0);
   }, 230);
 }
 
@@ -953,8 +1128,57 @@ function compressImage(file) {
   });
 }
 
+function insertPhotoBlocks(newBlocks, point) {
+  let index = point
+    ? editorBlocks.findIndex(block => block.id === point.blockId)
+    : -1;
+  if (index < 0) {
+    index = Math.max(editorBlocks.length - 1, 0);
+    while (index > 0 && editorBlocks[index].type !== 'text') index -= 1;
+  }
+
+  const target = editorBlocks[index];
+  if (target && target.type === 'text') {
+    const offset = Math.max(0, Math.min(point ? point.caret : target.text.length, target.text.length));
+    const before = target.text.slice(0, offset).replace(/\s+$/, '');
+    const after = target.text.slice(offset).replace(/^\s+/, '');
+    const replacement = [];
+    if (before) replacement.push(newTextBlock(before));
+    replacement.push(...newBlocks);
+    const afterBlock = newTextBlock(after);
+    replacement.push(afterBlock);
+    editorBlocks.splice(index, 1, ...replacement);
+    activeTextBlockId = afterBlock.id;
+    renderEditorBlocks(afterBlock.id, 0);
+    return;
+  }
+
+  editorBlocks.splice(index + 1, 0, ...newBlocks);
+  const afterBlock = newTextBlock();
+  editorBlocks.splice(index + 1 + newBlocks.length, 0, afterBlock);
+  activeTextBlockId = afterBlock.id;
+  renderEditorBlocks(afterBlock.id, 0);
+}
+
+function getInsertionPoint() {
+  if (activeTextBlockId && editorBlocks.some(block => block.id === activeTextBlockId && block.type === 'text')) {
+    return { blockId: activeTextBlockId, caret: activeTextCaret };
+  }
+  const focused = editorBlocksEl.querySelector('.editor-text:focus');
+  if (focused) {
+    return {
+      blockId: focused.dataset.textBlock,
+      caret: focused.selectionStart == null ? focused.value.length : focused.selectionStart
+    };
+  }
+  const textarea = editorBlocksEl.querySelector('[data-text-block="' + activeTextBlockId + '"]');
+  if (textarea) return { blockId: textarea.dataset.textBlock, caret: textarea.value.length };
+  const textBlock = editorBlocks.find(block => block.type === 'text');
+  return textBlock ? { blockId: textBlock.id, caret: textBlock.text.length } : null;
+}
+
 async function addSelectedPhotos(files) {
-  const remaining = PHOTO_LIMIT - editorPhotos.length;
+  const remaining = PHOTO_LIMIT - editorPhotoCount();
   if (remaining <= 0) {
     showToast('每篇随笔最多 3 张照片');
     return;
@@ -967,6 +1191,7 @@ async function addSelectedPhotos(files) {
 
   addPhotosBtn.disabled = true;
   addPhotosBtn.textContent = '正在整理…';
+  const newBlocks = [];
   for (const file of accepted) {
     if (file.size > MAX_FILE_BYTES) {
       showToast('有一张照片超过 30MB，已跳过');
@@ -974,26 +1199,39 @@ async function addSelectedPhotos(files) {
     }
     try {
       const blob = await compressImage(file);
-      editorPhotos.push({
-        id: uid(),
-        entryId: editingId || '',
-        blob,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
+      const photo = {
+        id: uid(), entryId: editingId || '', blob, createdAt: Date.now(), updatedAt: Date.now()
+      };
+      newBlocks.push({
+        id: uid(), type: 'image', photoId: photo.id, size: 'medium', photo
       });
-      renderEditorPhotos();
     } catch {
       showToast('有一张照片无法读取');
     }
   }
-  renderEditorPhotos();
+  if (newBlocks.length) insertPhotoBlocks(newBlocks, insertionPoint);
+  else renderEditorBlocks();
+  insertionPoint = null;
 }
 
 async function saveEditor() {
-  const text = editorText.value.trim();
-  if (!text) {
+  const content = editorBlocks.map(block => {
+    if (block.type === 'text') {
+      const text = block.text.replace(/\r\n?/g, '\n').trim();
+      return text ? { type: 'text', text } : null;
+    }
+    return block.photo ? {
+      type: 'image',
+      photoId: String(block.photoId),
+      size: safePhotoSize(block.size),
+      photo: block.photo
+    } : null;
+  }).filter(Boolean);
+  const textBlocks = content.filter(block => block.type === 'text');
+  if (!textBlocks.length) {
     showToast('先写下一句话吧');
-    editorText.focus();
+    const textarea = editorBlocksEl.querySelector('.editor-text');
+    if (textarea) textarea.focus();
     return;
   }
 
@@ -1002,17 +1240,23 @@ async function saveEditor() {
   const now = Date.now();
   const oldEntry = editingId ? state.entries.find(entry => entry.id === editingId) : null;
   const id = oldEntry ? oldEntry.id : uid();
+  const storedContent = content.map(block => block.type === 'text'
+    ? { type: 'text', text: block.text }
+    : { type: 'image', photoId: block.photoId, size: block.size }
+  );
   const entry = {
     id,
-    text,
+    text: textBlocks.map(block => block.text).join('\n'),
+    content: storedContent,
     font: editorFont,
-    photoIds: editorPhotos.map(photo => String(photo.id)),
+    photoIds: content.filter(block => block.type === 'image').map(block => block.photoId),
     createdAt: oldEntry ? oldEntry.createdAt : now,
     updatedAt: now
   };
 
   try {
-    for (const photo of editorPhotos) {
+    for (const block of content.filter(item => item.type === 'image')) {
+      const photo = block.photo;
       await putPhoto({ ...photo, entryId: id, id: String(photo.id), updatedAt: now });
     }
     if (oldEntry) {
@@ -1029,6 +1273,7 @@ async function saveEditor() {
 
     await refreshPhotos();
     closeMask(editorMask);
+    openEntryId = id;
     renderFeed();
     showToast(oldEntry ? '这一页已更新' : '已经收好');
   } catch (error) {
@@ -1096,7 +1341,7 @@ async function buildBackup() {
   })));
   return JSON.stringify({
     app: 'zhaomu',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     entries: state.entries,
     photos: encoded
@@ -1173,13 +1418,36 @@ document.getElementById('dayDate').textContent = '';
 document.getElementById('createBtn').addEventListener('click', () => openEditor(null));
 document.getElementById('menuBtn').addEventListener('click', () => openMask(document.getElementById('menuMask')));
 document.getElementById('saveBtn').addEventListener('click', saveEditor);
-document.getElementById('addPhotosBtn').addEventListener('click', () => photoInput.click());
+document.getElementById('addPhotosBtn').addEventListener('pointerdown', () => {
+  insertionPoint = getInsertionPoint();
+});
+document.getElementById('addPhotosBtn').addEventListener('click', () => {
+  if (!insertionPoint) insertionPoint = getInsertionPoint();
+  photoInput.click();
+});
 document.getElementById('exportBtn').addEventListener('click', exportBackup);
 document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click());
 document.getElementById('installBtn').addEventListener('click', installApp);
 
-editorText.addEventListener('input', resizeEditor);
-editorText.addEventListener('focus', resizeEditor);
+function trackTextarea(textarea) {
+  if (!textarea) return;
+  activeTextBlockId = textarea.dataset.textBlock;
+  activeTextCaret = textarea.selectionStart == null ? textarea.value.length : textarea.selectionStart;
+  const block = editorBlocks.find(item => item.id === activeTextBlockId);
+  if (block && block.type === 'text') block.text = textarea.value;
+}
+
+editorBlocksEl.addEventListener('input', event => {
+  const textarea = event.target.closest('.editor-text');
+  if (!textarea) return;
+  trackTextarea(textarea);
+  resizeTextarea(textarea);
+});
+editorBlocksEl.addEventListener('focusin', event => trackTextarea(event.target.closest('.editor-text')));
+editorBlocksEl.addEventListener('keyup', event => trackTextarea(event.target.closest('.editor-text')));
+editorBlocksEl.addEventListener('click', track => trackTextarea(track.target.closest('.editor-text')));
+editorBlocksEl.addEventListener('select', event => trackTextarea(event.target.closest('.editor-text')));
+
 photoInput.addEventListener('change', async event => {
   await addSelectedPhotos(event.target.files);
   event.target.value = '';
@@ -1194,11 +1462,27 @@ document.querySelectorAll('.font-choice').forEach(button => {
   button.addEventListener('click', () => setEditorFont(button.dataset.font));
 });
 
-editorMedia.addEventListener('click', event => {
-  const button = event.target.closest('[data-remove-photo]');
-  if (!button) return;
-  editorPhotos = editorPhotos.filter(photo => photo.id !== button.dataset.removePhoto);
-  renderEditorPhotos();
+editorBlocksEl.addEventListener('click', event => {
+  const sizeButton = event.target.closest('[data-photo-size]');
+  if (sizeButton) {
+    const imageBlockEl = sizeButton.closest('[data-image-block]');
+    const block = editorBlocks.find(item => item.id === imageBlockEl.dataset.imageBlock);
+    if (!block) return;
+    block.size = safePhotoSize(sizeButton.dataset.photoSize);
+    imageBlockEl.querySelector('.editor-image-frame').dataset.size = block.size;
+    imageBlockEl.querySelectorAll('[data-photo-size]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.photoSize === block.size));
+    });
+    return;
+  }
+
+  const removeButton = event.target.closest('[data-remove-photo]');
+  if (removeButton) {
+    editorBlocks = editorBlocks.filter(block => block.id !== removeButton.dataset.removePhoto);
+    if (!editorBlocks.some(block => block.type === 'text')) editorBlocks.push(newTextBlock());
+    activeTextBlockId = editorBlocks.find(block => block.type === 'text').id;
+    renderEditorBlocks(activeTextBlockId, 0);
+  }
 });
 
 feedEl.addEventListener('click', event => {
@@ -1215,6 +1499,15 @@ feedEl.addEventListener('click', event => {
   else if (actionEl.dataset.action === 'delete') deleteEntry(entry);
   else if (actionEl.dataset.action === 'view') openViewer(actionEl.dataset.photoId);
 });
+
+feedEl.addEventListener('toggle', event => {
+  const note = event.target.closest('details.note');
+  if (!note || !note.open) return;
+  feedEl.querySelectorAll('details.note[open]').forEach(other => {
+    if (other !== note) other.open = false;
+  });
+  openEntryId = note.dataset.id;
+}, true);
 
 document.querySelectorAll('[data-close]').forEach(button => {
   button.addEventListener('click', () => {
