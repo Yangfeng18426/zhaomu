@@ -165,7 +165,6 @@ body.modal-open{overflow:hidden}
   white-space:nowrap;
 }
 .note-summary-tail{display:flex;align-items:center;gap:12px;flex:0 0 auto}
-.note-count{color:var(--ink-faint);font-size:10px;letter-spacing:.06em;white-space:nowrap}
 .note-chevron{
   width:20px;
   color:var(--ink-faint);
@@ -354,8 +353,8 @@ body.modal-open{overflow:hidden}
 .editor-text{
   width:100%;
   min-height:110px;
-  max-height:38vh;
-  max-height:38dvh;
+  max-height:46vh;
+  max-height:46dvh;
   padding:13px 1px 15px;
   border:0;
   border-radius:0;
@@ -367,7 +366,10 @@ body.modal-open{overflow:hidden}
   letter-spacing:.035em;
   outline:0;
   resize:none;
-  overflow:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
 }
 .editor-text:focus-visible{
   outline:1px solid rgba(148,89,67,.35);
@@ -955,7 +957,6 @@ function renderFeed() {
 
   feedEl.innerHTML = entries.map(entry => {
     const preview = entry.text.replace(/\s+/g, ' ').trim();
-    const photoCountText = entry.photoIds.length ? entry.photoIds.length + ' 张照片' : '';
     return '<details class="note" data-id="' + escapeHtml(entry.id) + '"' +
         (openEntryId === entry.id ? ' open' : '') + '>' +
       '<summary class="note-summary">' +
@@ -965,7 +966,6 @@ function renderFeed() {
           '<span class="note-preview">' + escapeHtml(preview) + '</span>' +
         '</span>' +
         '<span class="note-summary-tail">' +
-          (photoCountText ? '<span class="note-count">' + photoCountText + '</span>' : '') +
           '<span class="note-chevron" aria-hidden="true">＋</span>' +
         '</span>' +
       '</summary>' +
@@ -1012,7 +1012,7 @@ function setEditorFont(font) {
 
 function resizeTextarea(textarea) {
   textarea.style.height = 'auto';
-  textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * .38) + 'px';
+  textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * .46) + 'px';
 }
 
 function newTextBlock(text = '') {
