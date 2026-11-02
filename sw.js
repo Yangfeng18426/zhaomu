@@ -1,5 +1,5 @@
 /* Service Worker for 朝暮 v1.0 */
-const CACHE_NAME = 'zhaomu-v5';
+const CACHE_NAME = 'zhaomu-v6';
 const urlsToCache = [
   './',
   './index.html',
@@ -28,19 +28,22 @@ self.addEventListener('activate', event => {
   );
 });
 
-/* 导航请求（HTML）network-first：有网先拿最新版，离线回退缓存；静态资源 cache-first 提速 */
+/* 导航请求先用缓存立即启动，同时在后台更新；静态资源 cache-first。 */
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const req = event.request;
   const isNav = req.mode === 'navigate';
   if (isNav) {
-    event.respondWith(
-      fetch(req).then(response => {
+    const cachePromise = caches.open(CACHE_NAME).then(cache => cache.match('./index.html'));
+    const networkPromise = fetch(req).then(response => {
+      if (response && response.ok) {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
-        return response;
-      }).catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
-    );
+        caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+      }
+      return response;
+    }).catch(() => null);
+    event.waitUntil(networkPromise.then(() => {}).catch(() => {}));
+    event.respondWith(cachePromise.then(cached => cached || networkPromise).then(response => response || Response.error()));
     return;
   }
   event.respondWith(

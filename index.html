@@ -11,6 +11,11 @@
 <meta name="description" content="朝暮，一封只写给自己的日常">
 <meta name="format-detection" content="telephone=no">
 <title>朝暮</title>
+<script>
+if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+  document.documentElement.classList.add('standalone');
+}
+</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
@@ -591,6 +596,7 @@ body.intro-open{overflow:hidden}
   transition:opacity .42s ease;
 }
 .launch-cover.show{display:flex}
+.standalone .launch-cover{display:flex}
 .launch-cover.leaving{opacity:0}
 .launch-inner{text-align:center;transform:translateY(8px);animation:launch-rise .7s cubic-bezier(.2,.75,.3,1) both}
 @keyframes launch-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(8px)}}
