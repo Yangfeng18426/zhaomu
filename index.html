@@ -596,7 +596,8 @@ body.intro-open{overflow:hidden}
   transition:opacity .42s ease;
 }
 .launch-cover.show{display:flex}
-.standalone .launch-cover{display:flex}
+.standalone .launch-cover{display:flex;animation:cover-failsafe .01s 2s forwards}
+@keyframes cover-failsafe{to{visibility:hidden;opacity:0;pointer-events:none}}
 .launch-cover.leaving{opacity:0}
 .launch-inner{text-align:center;transform:translateY(8px);animation:launch-rise .7s cubic-bezier(.2,.75,.3,1) both}
 @keyframes launch-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(8px)}}

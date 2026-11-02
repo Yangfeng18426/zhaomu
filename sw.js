@@ -1,5 +1,5 @@
 /* Service Worker for 朝暮 v1.0 */
-const CACHE_NAME = 'zhaomu-v7';
+const CACHE_NAME = 'zhaomu-v8';
 const urlsToCache = [
   './',
   './index.html',
@@ -19,13 +19,18 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(names =>
-      Promise.all(
-        names.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
-      )
-    ).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    const recoverOldCover = names.some(name => ['zhaomu-v5', 'zhaomu-v6', 'zhaomu-v7'].includes(name));
+    await Promise.all(names.filter(name => name !== CACHE_NAME).map(name => caches.delete(name)));
+    await self.clients.claim();
+    if (recoverOldCover) {
+      const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      await Promise.all(clients.map(client =>
+        typeof client.navigate === 'function' ? client.navigate(client.url).catch(() => {}) : Promise.resolve()
+      ));
+    }
+  })());
 });
 
 /* 导航请求先用缓存立即启动，同时在后台更新；静态资源 cache-first。 */
