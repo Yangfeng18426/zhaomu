@@ -1493,6 +1493,7 @@ function showStandaloneIntro() {
   introTimers.push(setTimeout(() => {
     cover.classList.remove('show', 'leaving');
     document.body.classList.remove('intro-open');
+    document.documentElement.classList.remove('standalone');
     introPlaying = false;
   }, hold + 450));
 }
